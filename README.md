@@ -1,4 +1,4 @@
-# stm32f4-05-serial example using Rust
+# NOT OLED yet. Just my cloned stm32f4-05-serial example
 
 ![Hardware required](./docs/images/blackpill-serial-stlink.jpg "Hardware required")
 
