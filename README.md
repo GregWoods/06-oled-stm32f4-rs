@@ -33,18 +33,19 @@ A simple project which runs on the **stm32f411 black pill** board (should also w
 | TXO | PA10 (USART1 RX) |
 | RXI | PA9 (USART1 TX) |
 
-* Connect the USB-to-serial board to the black pill (used for the serial test)
 
-| USB-to-serial | Black Pill 4 pin debug header |
+### Connect the OLED board to the Black Pill
+
+| OLED (SSD1306 128x64 pixels) | Black Pill GPIO pins |
 | --- | --- |
 | GND | GND |
-| SWCLK | SWSCK |
-| SWDIO | SWDIO |
-| 3.3V | 3V3 |
+| SCL | B8 |
+| SDA | B9 |
+| VCC | 3V3 |
 
 ## Generate your project
 ```
-cargo generate --git https://github.com/gregwoods/stm32f4-05-serial --name your-project-name
+cargo generate --git https://github.com/gregwoods/x06-oled-f4-rs --name your-project-name
 ```
 
 ## Set up source control for your project
@@ -67,13 +68,6 @@ git push
 ```cargo build```
 or
 ```cargo build --release```
-
-### Connect the OLED board to the Black Pill
-
-* SCL pin on the OLED to B8 on the black pill board
-* SDA pin on teh OLED to B9 on the black pill board
-* Vcc on the OLED to 3.3V on the black pill
-* GND on the OLED to Gnd on the Black pill
 
 ### Run it
 
