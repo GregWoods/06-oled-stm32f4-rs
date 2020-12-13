@@ -1,14 +1,7 @@
-# NOT OLED yet. Just my cloned stm32f4-05-serial example
-
 ![Hardware required](./docs/images/blackpill-serial-stlink.jpg "Hardware required")
 
 A simple project which runs on the **stm32f411 black pill** board (should also work on the stm32f401 variant, although memory.x should be altered to reflect the lower memory of the 401 board)
 
-This repo demonstrates the use of the USART functionality of **stm32f4xx_hal**
-
-It is intended to be used as a template for use with ```cargo generate``
-
-It contains my own well-tested opinions about tools and practices. 
 
 ## Development Environment Prerequisites
 
@@ -30,7 +23,7 @@ It contains my own well-tested opinions about tools and practices.
 * An ST-Link V2, or clone ($2)
 * A USB to Serial board. Mine is based on a **CP2102** chip and uses a microUSB cable instead of plugging straight into the USB port ($1)
 * USB-C cable for the black pill
-* microUSB cablefor the CP2102 (if you bought the microUSB variant)
+* An i2c mini display based on the ssd1306 chipset. I used the 4 pin (i2C) 0.96" white model
 * You will probably need to solder the pins to the 2 boards
 * Connect the ST-Link v2 to the Black Pill (used to upload and debug code)
 
@@ -75,17 +68,19 @@ git push
 or
 ```cargo build --release```
 
-### Connect to the usb-to-serial adapter
+### Connect the OLED board to the Black Pill
 
-* Connect the USB-to-serial board to your PC and find its COM port in Device Manager (Windows)
-* Use a serial terminal to connect to the serial port at 19200 baud
+* SCL pin on the OLED to B8 on the black pill board
+* SDA pin on teh OLED to B9 on the black pill board
+* Vcc on the OLED to 3.3V on the black pill
+* GND on the OLED to Gnd on the Black pill
 
 ### Run it
 
 * In the VS Code Debug tab (Ctrl+Shift+D)...
 * Select ```Debug (OpenOCD)``` or ```Release (OpenOCD)```
 * F5 to Run
-* This rust application simply echos back whatever you type into the serial terminal
+* The test message is printed on the OLED
 
 ## Problems
 
