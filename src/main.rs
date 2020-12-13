@@ -1,24 +1,16 @@
-//! Blinks an LED
-//!
-//! This assumes that a LED is connected to pc13 as is the case on the blue pill board.
-//!
-//! Note: Without additional hardware, PC13 should not be used to drive an LED, see page 5.1.2 of
-//! the reference manual for an explanation. This is not an issue on the blue pill.
-
 #![deny(unsafe_code)]
 #![no_std]
 #![no_main]
 
 use panic_halt as _;
-
-
+use cortex_m_rt::entry;
+use core::fmt::Write;
+use ssd1306::{prelude::*, Builder as SSD1306Builder};
 use stm32f4xx_hal::{
     prelude::*,
+    i2c::I2c,
     stm32,
-    serial::{Serial, config::Config},
 };
-//use cortex_m_semihosting::hprintln;
-use cortex_m_rt::entry;
 
 
 #[entry]
@@ -28,30 +20,19 @@ fn main() -> ! {
     let rcc = dp.RCC.constrain();
     let clocks = rcc.cfgr.freeze();
 
-    let gpioa = dp.GPIOA.split();
+    // Set up I2C - SCL is PB8 and SDA is PB9; they are set to Alternate Function 4, open drain
+    let gpiob = dp.GPIOB.split();
+    let scl = gpiob.pb8.into_alternate_af4().set_open_drain();
+    let sda = gpiob.pb9.into_alternate_af4().set_open_drain();
+    let i2c = I2c::i2c1(dp.I2C1, (scl, sda), 400.khz(), clocks);
 
-    let txpin = gpioa.pa9.into_alternate_af7();
-    let rxpin = gpioa.pa10.into_alternate_af7();
-
-    let mut serial1 = Serial::usart1(
-        dp.USART1, 
-        (txpin, rxpin), 
-        Config::default(), 
-        clocks).expect("error initialising USART1");
-
-    //convert this into a function when I figure out how! Forcnow, inline it.
-    //  and add it as write_str() into stm32f4xx-hal ... in the distant future
-    for byte in b"Hello, welcome from Greg\n".iter() {
-        while serial1.write(*byte).is_err() {}
-    }
-
+    // Set up the display: using terminal mode with 128x32 display
+    let mut disp: TerminalMode<_> = SSD1306Builder::new().size(DisplaySize::Display128x64).connect_i2c(i2c).into();
+    disp.init().unwrap();
+    disp.clear().unwrap();
+   
+    //disp.write_str(buffer.as_str()).unwrap();
+    disp.write_str("I Love Ali").unwrap();          
     
-
-    loop {
-        // Wait for reception of a single byte
-        let received = nb::block!(serial1.read()).unwrap();
-
-        // Send back previously received byte and wait for completion
-        nb::block!(serial1.write(received)).ok();
-    }
+    loop {}
 }
